@@ -1,0 +1,45 @@
+{
+    "kind": "Build",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "rel-v2",
+        "creationTimestamp": null,
+        "labels": {
+            "ab": "true",
+            "app": "v2",
+            "buildconfig": "rel-v2",
+            "openshift.io/build-config.name": "rel-v2"
+        },
+        "annotations": {
+            "openshift.io/build-config.name": "rel-v2",
+        }
+    },
+    "spec": {
+        "serviceAccount": "builder",
+        "source": {
+            "type": "Git",
+            "git": {
+                "uri": "https://github.com/j1cken/nodejs-ex.git",
+                "ref": "v2"
+            },
+            "secrets": null
+        },
+        "strategy": {
+            "type": "Source",
+            "sourceStrategy": {
+                "from": {
+                    "kind": "DockerImage",
+                    "name": "registry.access.redhat.com/openshift3/nodejs-010-rhel7:latest"
+                }
+            }
+        },
+        "output": {
+            "to": {
+                "kind": "ImageStreamTag",
+                "name": "v2:1.0"
+            }
+        },
+        "resources": {},
+        "postCommit": {}
+    }
+}

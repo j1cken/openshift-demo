@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <com.openshift.jenkins.plugins.pipeline.OpenShiftImageTagger plugin="openshift-pipeline@1.0.13">
+      <apiURL>https://openshift.default.svc.cluster.local</apiURL>
+      <namespace>ab</namespace>
+      <authToken>oBbRxIlnM4qkSRYN1IEj3vzMId2Owf7R8RW1gffziYQ</authToken>
+      <verbose>false</verbose>
+      <testTag>1.0</testTag>
+      <prodTag>v2</prodTag>
+      <testStream>v2</testStream>
+      <prodStream>acceptance</prodStream>
+      <destinationNamespace>ab</destinationNamespace>
+      <destinationAuthToken>oBbRxIlnM4qkSRYN1IEj3vzMId2Owf7R8RW1gffziYQ</destinationAuthToken>
+      <alias>true</alias>
+    </com.openshift.jenkins.plugins.pipeline.OpenShiftImageTagger>
+    <com.openshift.jenkins.plugins.pipeline.OpenShiftImageTagger plugin="openshift-pipeline@1.0.13">
+      <apiURL>https://openshift.default.svc.cluster.local</apiURL>
+      <namespace>ab</namespace>
+      <authToken>oBbRxIlnM4qkSRYN1IEj3vzMId2Owf7R8RW1gffziYQ</authToken>
+      <verbose>false</verbose>
+      <testTag>v2</testTag>
+      <prodTag>latest</prodTag>
+      <testStream>acceptance</testStream>
+      <prodStream>acceptance</prodStream>
+      <destinationNamespace>ab</destinationNamespace>
+      <destinationAuthToken>oBbRxIlnM4qkSRYN1IEj3vzMId2Owf7R8RW1gffziYQ</destinationAuthToken>
+      <alias>true</alias>
+    </com.openshift.jenkins.plugins.pipeline.OpenShiftImageTagger>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

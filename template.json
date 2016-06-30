@@ -1,0 +1,753 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "ab-deployment-demo",
+    "creationTimestamp": null
+  },
+  "objects": [
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "v1",
+        "generation": 1,
+        "creationTimestamp": null,
+        "labels": {
+          "ab": "true",
+          "app": "v1"
+        },
+        "annotations": {
+          "openshift.io/generated-by": "OpenShiftWebConsole"
+        }
+      },
+      "spec": {
+        "tags": [
+          {
+            "name": "latest",
+            "annotations": null,
+            "from": {
+              "kind": "DockerImage",
+              "name": "172.30.169.208:5000/ab/v1:latest"
+            },
+            "generation": null,
+            "importPolicy": {}
+          }
+        ]
+      },
+      "status": {
+        "dockerImageRepository": ""
+      }
+    },
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "v2",
+        "generation": 1,
+        "creationTimestamp": null,
+        "labels": {
+          "ab": "true",
+          "app": "v2"
+        },
+        "annotations": {
+          "openshift.io/generated-by": "OpenShiftWebConsole"
+        }
+      },
+      "spec": {
+        "tags": [
+          {
+            "name": "latest",
+            "annotations": null,
+            "from": {
+              "kind": "DockerImage",
+              "name": "172.30.169.208:5000/ab/v2:latest"
+            },
+            "generation": null,
+            "importPolicy": {}
+          }
+        ]
+      },
+      "status": {
+        "dockerImageRepository": ""
+      }
+    },
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "acceptance",
+        "generation": 1,
+        "creationTimestamp": null,
+        "labels": {
+          "ab": "true",
+          "app": "acceptance"
+        },
+        "annotations": {
+          "openshift.io/generated-by": "OpenShiftWebConsole"
+        }
+      },
+      "spec": {
+        "tags": [
+          {
+            "name": "latest",
+            "annotations": null,
+            "from": null,
+            "generation": null,
+            "importPolicy": {}
+          }
+        ]
+      },
+      "status": {
+        "dockerImageRepository": ""
+      }
+    },
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "production",
+        "generation": 1,
+        "creationTimestamp": null,
+        "labels": {
+          "ab": "true",
+          "app": "production"
+        },
+        "annotations": {
+          "openshift.io/generated-by": "OpenShiftWebConsole"
+        }
+      },
+      "spec": {
+        "tags": [
+          {
+            "name": "latest",
+            "annotations": null,
+            "from": null,
+            "generation": null,
+            "importPolicy": {}
+          }
+        ]
+      },
+      "status": {
+        "dockerImageRepository": ""
+      }
+    },
+    {
+      "kind": "BuildConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "v1",
+        "creationTimestamp": null,
+        "labels": {
+          "ab": "true",
+          "app": "v1"
+        },
+        "annotations": {
+          "openshift.io/generated-by": "OpenShiftWebConsole"
+        }
+      },
+      "spec": {
+        "triggers": [
+          {
+            "type": "ImageChange",
+            "imageChange": {}
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "source": {
+          "type": "Git",
+          "git": {
+            "uri": "https://github.com/j1cken/nodejs-ex.git",
+            "ref": "master"
+          },
+          "secrets": null
+        },
+        "strategy": {
+          "type": "Source",
+          "sourceStrategy": {
+            "from": {
+              "kind": "ImageStreamTag",
+              "namespace": "openshift",
+              "name": "nodejs:latest"
+            }
+          }
+        },
+        "output": {
+          "to": {
+            "kind": "ImageStreamTag",
+            "name": "v1:latest"
+          }
+        },
+        "resources": {},
+        "postCommit": {}
+      },
+      "status": {
+        "lastVersion": 0
+      }
+    },
+    {
+      "kind": "BuildConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "v2",
+        "creationTimestamp": null,
+        "labels": {
+          "ab": "true",
+          "app": "v2"
+        },
+        "annotations": {
+          "openshift.io/generated-by": "OpenShiftWebConsole"
+        }
+      },
+      "spec": {
+        "triggers": [
+          {
+            "type": "ImageChange",
+            "imageChange": {}
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "source": {
+          "type": "Git",
+          "git": {
+            "uri": "https://github.com/j1cken/nodejs-ex.git",
+            "ref": "v2"
+          },
+          "secrets": null
+        },
+        "strategy": {
+          "type": "Source",
+          "sourceStrategy": {
+            "from": {
+              "kind": "ImageStreamTag",
+              "namespace": "openshift",
+              "name": "nodejs:latest"
+            }
+          }
+        },
+        "output": {
+          "to": {
+            "kind": "ImageStreamTag",
+            "name": "v2:latest"
+          }
+        },
+        "resources": {},
+        "postCommit": {}
+      },
+      "status": {
+        "lastVersion": 0
+      }
+    },
+    {
+      "kind": "BuildConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "rel-v2",
+        "creationTimestamp": null,
+        "labels": {
+          "ab": "true",
+          "app": "v2"
+        },
+        "annotations": {
+          "openshift.io/generated-by": "OpenShiftWebConsole"
+        }
+      },
+      "spec": {
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "source": {
+          "type": "Git",
+          "git": {
+            "uri": "https://github.com/j1cken/nodejs-ex.git",
+            "ref": "v2"
+          },
+          "secrets": null
+        },
+        "strategy": {
+          "type": "Source",
+          "sourceStrategy": {
+            "from": {
+              "kind": "ImageStreamTag",
+              "namespace": "openshift",
+              "name": "nodejs:latest"
+            }
+          }
+        },
+        "output": {
+          "to": {
+            "kind": "ImageStreamTag",
+            "name": "v2:1.0"
+          }
+        },
+        "resources": {},
+        "postCommit": {}
+      },
+      "status": {
+        "lastVersion": 0
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "v1",
+        "creationTimestamp": null,
+        "labels": {
+          "ab": "true",
+          "app": "v1"
+        },
+        "annotations": {
+          "openshift.io/generated-by": "OpenShiftWebConsole"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Rolling",
+          "rollingParams": {
+            "updatePeriodSeconds": 1,
+            "intervalSeconds": 1,
+            "timeoutSeconds": 600,
+            "maxUnavailable": "25%",
+            "maxSurge": "25%"
+          },
+          "resources": {}
+        },
+        "triggers": [
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "v1"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "v1:latest"
+              }
+            }
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "replicas": 4,
+        "test": false,
+        "selector": {
+          "deploymentconfig": "v1"
+        },
+        "template": {
+          "metadata": {
+            "creationTimestamp": null,
+            "labels": {
+              "ab": "true",
+              "app": "v1",
+              "deploymentconfig": "v1"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "v1",
+                "image": "172.30.169.208:5000/ab/v1:latest",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "imagePullPolicy": "Always"
+              }
+            ],
+            "restartPolicy": "Always",
+            "terminationGracePeriodSeconds": 30,
+            "dnsPolicy": "ClusterFirst",
+            "securityContext": {}
+          }
+        }
+      },
+      "status": {}
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "v2",
+        "creationTimestamp": null,
+        "labels": {
+          "ab": "true",
+          "app": "v2"
+        },
+        "annotations": {
+          "openshift.io/generated-by": "OpenShiftWebConsole"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Rolling",
+          "rollingParams": {
+            "updatePeriodSeconds": 1,
+            "intervalSeconds": 1,
+            "timeoutSeconds": 600,
+            "maxUnavailable": "25%",
+            "maxSurge": "25%"
+          },
+          "resources": {}
+        },
+        "triggers": [
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "v2"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "v2:latest"
+              }
+            }
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "replicas": 1,
+        "test": false,
+        "selector": {
+          "deploymentconfig": "v2"
+        },
+        "template": {
+          "metadata": {
+            "creationTimestamp": null,
+            "labels": {
+              "ab": "true",
+              "app": "v2",
+              "deploymentconfig": "v2"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "v2",
+                "image": "172.30.169.208:5000/ab/v2:latest",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "imagePullPolicy": "Always"
+              }
+            ],
+            "restartPolicy": "Always",
+            "terminationGracePeriodSeconds": 30,
+            "dnsPolicy": "ClusterFirst",
+            "securityContext": {}
+          }
+        }
+      },
+      "status": {}
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "v1",
+        "creationTimestamp": null,
+        "labels": {
+          "ab": "true",
+          "app": "v1"
+        },
+        "annotations": {
+          "openshift.io/generated-by": "OpenShiftWebConsole"
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "8080-tcp",
+            "protocol": "TCP",
+            "port": 8080,
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "deploymentconfig": "v1"
+        },
+        "type": "ClusterIP",
+        "sessionAffinity": "None"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "v2",
+        "creationTimestamp": null,
+        "labels": {
+          "ab": "true",
+          "app": "v2"
+        },
+        "annotations": {
+          "openshift.io/generated-by": "OpenShiftWebConsole"
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "8080-tcp",
+            "protocol": "TCP",
+            "port": 8080,
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "deploymentconfig": "v2"
+        },
+        "type": "ClusterIP",
+        "sessionAffinity": "None"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "v1",
+        "creationTimestamp": null,
+        "labels": {
+          "ab": "true",
+          "app": "v1"
+        }
+      },
+      "spec": {
+        "host": "v1-ab.rhcloud.example.com",
+        "to": {
+          "kind": "Service",
+          "name": "v1"
+        },
+        "port": {
+          "targetPort": "8080-tcp"
+        }
+      },
+      "status": {
+        "ingress": [
+          {
+            "host": "v2-ab.rhcloud.example.com",
+            "routerName": "router",
+            "conditions": [
+              {
+                "type": "Admitted",
+                "status": "True",
+                "lastTransitionTime": "2016-06-28T16:23:57Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "v2",
+        "creationTimestamp": null,
+        "labels": {
+          "ab": "true",
+          "app": "v2"
+        }
+      },
+      "spec": {
+        "host": "v2-ab.rhcloud.example.com",
+        "to": {
+          "kind": "Service",
+          "name": "v2"
+        },
+        "port": {
+          "targetPort": "8080-tcp"
+        }
+      },
+      "status": {
+        "ingress": [
+          {
+            "host": "v2-ab.rhcloud.example.com",
+            "routerName": "router",
+            "conditions": [
+              {
+                "type": "Admitted",
+                "status": "True",
+                "lastTransitionTime": "2016-06-28T16:24:41Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "production",
+        "creationTimestamp": null,
+        "labels": {
+          "app": "production"
+        },
+        "annotations": {
+          "openshift.io/generated-by": "OpenShiftWebConsole"
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "8080-tcp",
+            "protocol": "TCP",
+            "port": 8080,
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "deploymentconfig": "production"
+        },
+        "type": "ClusterIP",
+        "sessionAffinity": "None"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "production",
+        "creationTimestamp": null,
+        "labels": {
+          "app": "production"
+        }
+      },
+      "spec": {
+        "host": "prod-ab.rhcloud.example.com",
+        "to": {
+          "kind": "Service",
+          "name": "production"
+        },
+        "port": {
+          "targetPort": "8080-tcp"
+        }
+      },
+      "status": {
+        "ingress": [
+          {
+            "host": "prod-ab.rhcloud.example.com",
+            "routerName": "router",
+            "conditions": [
+              {
+                "type": "Admitted",
+                "status": "True",
+                "lastTransitionTime": "2016-06-29T11:46:45Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "production",
+        "creationTimestamp": null,
+        "labels": {
+          "app": "production"
+        },
+        "annotations": {
+          "openshift.io/generated-by": "OpenShiftWebConsole"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Rolling",
+          "rollingParams": {
+            "updatePeriodSeconds": 1,
+            "intervalSeconds": 1,
+            "timeoutSeconds": 600,
+            "maxUnavailable": "25%",
+            "maxSurge": "25%"
+          },
+          "resources": {}
+        },
+        "triggers": [
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "production"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "production:latest"
+              }
+            }
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "replicas": 4,
+        "test": false,
+        "selector": {
+          "deploymentconfig": "production"
+        },
+        "template": {
+          "metadata": {
+            "creationTimestamp": null,
+            "labels": {
+              "ab": "true",
+              "app": "production",
+              "deploymentconfig": "production"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "production",
+                "image": "172.30.169.208:5000/ab/production:latest",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "imagePullPolicy": "Always"
+              }
+            ],
+            "restartPolicy": "Always",
+            "terminationGracePeriodSeconds": 30,
+            "dnsPolicy": "ClusterFirst",
+            "securityContext": {}
+          }
+        }
+      },
+      "status": {}
+    }
+  ]
+}

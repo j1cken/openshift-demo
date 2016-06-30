@@ -1,0 +1,25 @@
+#!/bin/bash
+
+default_url=https://$(oc get nodes | grep -i Ready | head -1 | awk '{print $1}'):10250
+read -p "Enter the servers URL ['${default_url}']: " url
+url=${url:-${default_url}}
+
+read -p "Enter the project name ['$(oc project --short)']: " project
+project=${project:-$(oc project --short)}
+
+read -p "Enter the name ['hawkular-metrics']: " name
+name=${name:-hawkular-metrics}
+
+pod=$(oc get pods | grep -i ${name} | awk '{print $1}')
+
+uid=$(oc get -o yaml pod ${pod} | grep -i uid: | awk '{print $2}')
+
+echo "Pod ${pod} has UID of ${uid}"
+
+stats_url=${url}/stats/${project}/${pod}/${uid}/${name}
+
+echo "Stats URL ${stats_url}"
+
+curl --insecure -H "Authorization: Bearer `oc whoami -t`" -X POST -d '{"num_stats": 1}' ${stats_url} | python -m json.tool
+
+

@@ -1,0 +1,63 @@
+{
+    "kind": "ImageStream",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "jenkins",
+        "generation": 7,
+        "creationTimestamp": null,
+        "annotations": {
+            "openshift.io/image.dockerRepositoryCheck": "2016-06-29T12:35:25Z"
+        }
+    },
+    "spec": {
+        "tags": [
+            {
+                "name": "1",
+                "annotations": {
+                    "description": "Provides a Jenkins server",
+                    "iconClass": "icon-jenkins",
+                    "tags": "jenkins",
+                    "version": "1.x"
+                },
+                "from": {
+                    "kind": "DockerImage",
+                    "name": "172.30.169.208:5000/openshift/jenkins:1"
+                },
+                "generation": 7,
+                "importPolicy": {}
+            },
+            {
+                "name": "1.642-31",
+                "annotations": {
+                    "description": "Provides a Jenkins server",
+                    "iconClass": "icon-jenkins",
+                    "tags": "jenkins",
+                    "version": "1.x"
+                },
+                "from": {
+                    "kind": "DockerImage",
+                    "name": "172.30.169.208:5000/openshift/jenkins:1.642-31"
+                },
+                "generation": 7,
+                "importPolicy": {}
+            },
+            {
+                "name": "latest",
+                "annotations": {
+                    "description": "Provides a Jenkins server",
+                    "iconClass": "icon-jenkins",
+                    "tags": "jenkins"
+                },
+                "from": {
+                    "kind": "DockerImage",
+                    "name": "172.30.169.208:5000/openshift/jenkins:latest"
+                },
+                "generation": 6,
+                "importPolicy": {}
+            }
+        ]
+    },
+    "status": {
+        "dockerImageRepository": ""
+    }
+}
