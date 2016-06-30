@@ -6,7 +6,10 @@ oc new-project ab
 # create Template
 
 ## using WebUI
-### create template: oc create -f template.json
+### create template
+```
+oc create -f template.json
+```
 ### add template to project
 ### create deployments
 
@@ -42,8 +45,9 @@ for i in {1..10000};do curl v2-ab.rhcloud.example.com;done
 
 ## show terminal access in WebUI to find rsync directory
 
-## show from commandline
-```oc get pods
+## show from CLI
+```
+oc get pods
 oc rsh v2-1-4bnic
 oc rsync --exclude='.git' . v2-1-4bnic:/opt/app-root/src
 ```
