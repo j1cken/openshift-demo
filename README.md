@@ -1,3 +1,8 @@
+# TODOs for running on a different OSE instance
+* change registry IP
+* change wildcard domain
+* change token in Jenkins jobs
+
 # create project ab
 ```
 oc new-project ab
