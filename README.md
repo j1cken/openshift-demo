@@ -43,7 +43,7 @@ git co v2
 
 # curl loop to v2
 ```
-for i in {1..10000};do curl v2-ab.rhcloud.example.com;done
+for i in {1..10000};do curl v2-ab.rhcloud.example.com; sleep 0.5;done
 ```
 
 # rsync changes into running container
