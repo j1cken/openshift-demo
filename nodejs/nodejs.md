@@ -1,3 +1,8 @@
+# TODOs for running on a different OSE instance
+* change registry IP
+* change wildcard domain
+* change token in Jenkins jobs
+
 # create project ab
 ```
 oc new-project ab
@@ -38,7 +43,7 @@ git co v2
 
 # curl loop to v2
 ```
-for i in {1..10000};do curl v2-ab.rhcloud.example.com;done
+for i in {1..10000};do curl v2-ab.rhcloud.example.com; sleep 0.5;done
 ```
 
 # rsync changes into running container
