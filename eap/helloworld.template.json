@@ -1,0 +1,185 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "helloworld-template"
+  },
+  "objects": [
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${app}",
+        "generation": 1,
+        "creationTimestamp": null,
+        "labels": {
+          "app": "${app}"
+        }
+      },
+      "spec": {
+        "tags": [
+          {
+            "name": "latest",
+            "annotations": null,
+            "from": {
+              "kind": "DockerImage",
+              "name": "172.30.220.23:5000/${environment}/${app}:latest"
+            },
+            "importPolicy": {}
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${app}",
+        "creationTimestamp": null,
+        "labels": {
+          "app": "${app}"
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "8080-tcp",
+            "protocol": "TCP",
+            "port": 8080,
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "deploymentconfig": "${app}"
+        },
+        "type": "ClusterIP",
+        "sessionAffinity": "None"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${app}",
+        "creationTimestamp": null,
+        "labels": {
+          "app": "${app}"
+        }
+      },
+      "spec": {
+        "host": "${app}-${environment}.52.166.241.186.xip.io",
+        "to": {
+          "kind": "Service",
+          "name": "${app}"
+        },
+        "port": {
+          "targetPort": "8080-tcp"
+        }
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${app}",
+        "labels": {
+          "app": "${app}"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Rolling",
+          "rollingParams": {
+            "updatePeriodSeconds": 1,
+            "intervalSeconds": 1,
+            "timeoutSeconds": 600,
+            "maxUnavailable": "25%",
+            "maxSurge": "25%"
+          },
+          "resources": {}
+        },
+        "triggers": [
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "${app}"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "${app}:latest"
+              }
+            }
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "replicas": 1,
+        "test": false,
+        "selector": {
+          "deploymentconfig": "${app}"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "${app}"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "${app}",
+                "image": "172.30.220.23:5000/${environment}/${app}:latest",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "tcpSocket": {
+                    "port": 8080
+                  },
+                  "initialDelaySeconds": 15,
+                  "timeoutSeconds": 1
+                },
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "imagePullPolicy": "Always"
+              }
+            ],
+            "restartPolicy": "Always",
+            "terminationGracePeriodSeconds": 30,
+            "dnsPolicy": "ClusterFirst",
+            "securityContext": {}
+          }
+        }
+      },
+      "status": {}
+    }
+  ],
+    "parameters": [
+        {
+            "name": "environment",
+            "displayName": "Name of environment",
+            "description": "The name of the environment which is going to be deployed.",
+            "value": "uat",
+            "required": true
+        },
+        {
+            "name": "app",
+            "displayName": "Name of the application",
+            "description": "The name of the application which is going to be deployed.",
+            "value": "helloworld",
+            "required": true
+        }
+    ],
+    "labels": {
+        "template": "helloworld-template"
+    }
+}

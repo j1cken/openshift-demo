@@ -1,0 +1,1 @@
+oc patch service blue --type='strategic' -p '{"spec":{"selector":{"canary":"true"}}}' -n production

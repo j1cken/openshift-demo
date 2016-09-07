@@ -1,0 +1,1 @@
+oc autoscale dc/blue --min=2 --max=4

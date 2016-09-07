@@ -1,0 +1,28 @@
+echo 'creating new project eap-integration'
+oc new-project eap-integration
+
+echo 'creating new application master'
+oc new-app --name=master -e MAVEN_MIRROR_URL=http://nexus.ci.svc.cluster.local/content/groups/public openshift/jboss-eap70-openshift~https://github.com/j1cken/java-rs-ex.git
+oc cancel-build master-1
+oc patch bc master -p '{"spec":{"source":{"git":{"ref":"master"}},"strategy":{"sourceStrategy":{"incremental":true,"env": [{"name": "MAVEN_MIRROR_URL","value": "http://nexus.ci.svc.cluster.local:8081/content/groups/public"}]}}}}'
+oc start-build master
+oc expose svc master
+
+echo 'creating new application v2'
+oc new-app --name=v2 -e MAVEN_MIRROR_URL=http://nexus.ci.svc.cluster.local/content/groups/public openshift/jboss-eap70-openshift~https://github.com/j1cken/java-rs-ex.git
+oc cancel-build v2-1
+oc patch bc v2 -p '{"spec":{"source":{"git":{"ref":"v2"}},"strategy":{"sourceStrategy":{"incremental":true,"env": [{"name": "MAVEN_MIRROR_URL","value": "http://nexus.ci.svc.cluster.local:8081/content/groups/public"}]}}}}'
+oc start-build v2
+oc expose svc v2
+
+echo 'creating new project eap-uat'
+#oc new-project eap-uat
+echo 'creating new project eap-production'
+#oc new-project eap-production
+
+echo '*** deleting all resources ***'
+read
+
+oc delete project eap-integration
+oc delete project eap-uat
+oc delete project eap-production
