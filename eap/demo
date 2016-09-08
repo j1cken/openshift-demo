@@ -1,12 +1,14 @@
 #!/bin/bash
-if [ $# -ne 2 ]; then
-  echo "Usage: $0 registry_address wildcard_domain"
-  echo "$0 172.30.169.208 rhcloud.example.com"
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 wildcard_domain"
+  echo "$0 rhcloud.example.com"
   exit
 fi
 
-registry_address=$1
-wildcard_domain=$2
+registry_address=`oc get -n default svc docker-registry --template='{{.spec.clusterIP}}'`
+wildcard_domain=$1
+
+exit
 
 read -p 'creating integration environment ... <return> to continue, <Ctrl-c> to cancel' -n 1 -r
 oc new-project eap-integration
