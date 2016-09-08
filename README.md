@@ -1,8 +1,8 @@
 # Demos for Red Hat OpenShift Container Platform
 
-## [JBoss Enterprise Application Platform](eap/README.md)
-## [Node.js](nodejs/README.md)
-## [Wordpress](wp/README.md)
+## [JBoss Enterprise Application Platform](eap/)
+## [Node.js](nodejs/)
+## [Wordpress](wp/)
 ## [RH SSO]
 upcoming
 ## [3scale]

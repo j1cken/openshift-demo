@@ -2,7 +2,7 @@
 ## Prerequisites
 + Namespace called 'ci'
   + deployed application called ['nexus'](https://github.com/j1cken/nexus-ose/)
-  + deployed application called ['jenkins'](../jenkins/README.md)
+  + deployed application called ['jenkins'](../jenkins/)
     + Plugins needed
       + [OpenShift Pipeline Jenkins Plugin](https://wiki.jenkins-ci.org/display/JENKINS/OpenShift+Pipeline+Plugin)
       + [Build Flow plugin](https://wiki.jenkins-ci.org/display/JENKINS/Build+Flow+Plugin)
