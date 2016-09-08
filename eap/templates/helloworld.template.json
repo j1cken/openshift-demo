@@ -23,7 +23,7 @@
             "annotations": null,
             "from": {
               "kind": "DockerImage",
-              "name": "172.30.220.23:5000/${environment}/${app}:latest"
+              "name": "${registry_address}:5000/${environment}/${app}:latest"
             },
             "importPolicy": {}
           }
@@ -70,7 +70,7 @@
         }
       },
       "spec": {
-        "host": "${app}-${environment}.52.166.241.186.xip.io",
+        "host": "${app}-${environment}.${wildcard_domain}",
         "to": {
           "kind": "Service",
           "name": "${app}"
@@ -134,7 +134,7 @@
             "containers": [
               {
                 "name": "${app}",
-                "image": "172.30.220.23:5000/${environment}/${app}:latest",
+                "image": "${registry_address}:5000/${environment}/${app}:latest",
                 "ports": [
                   {
                     "containerPort": 8080,
@@ -143,7 +143,7 @@
                 ],
                 "readinessProbe": {
                   "tcpSocket": {
-                    "port": 8080
+                    "port": 9990
                   },
                   "initialDelaySeconds": 15,
                   "timeoutSeconds": 1
@@ -176,6 +176,20 @@
             "displayName": "Name of the application",
             "description": "The name of the application which is going to be deployed.",
             "value": "helloworld",
+            "required": true
+        },
+        {
+            "name": "registry_address",
+            "displayName": "Service IP of the registry",
+            "description": "The IP address of the registry's service.",
+            "value": "172.30.169.208",
+            "required": true
+        },
+        {
+            "name": "wildcard_domain",
+            "displayName": "Wildcard Domain for generated routes",
+            "description": "The wildcard domain which services are exposed with.",
+            "value": "rhcloud.example.com",
             "required": true
         }
     ],

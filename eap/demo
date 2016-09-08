@@ -1,27 +1,52 @@
-echo 'creating new project eap-integration'
+#!/bin/bash
+if [ $# -ne 2 ]; then
+  echo "Usage: $0 registry_address wildcard_domain"
+  echo "$0 172.30.169.208 rhcloud.example.com"
+  exit
+fi
+
+registry_address=$1
+wildcard_domain=$2
+
+read -p 'creating integration environment ... <return> to continue, <Ctrl-c> to cancel' -n 1 -r
 oc new-project eap-integration
 
 echo 'creating new application master'
-oc new-app --name=master -e MAVEN_MIRROR_URL=http://nexus.ci.svc.cluster.local/content/groups/public openshift/jboss-eap70-openshift~https://github.com/j1cken/java-rs-ex.git
-oc cancel-build master-1
-oc patch bc master -p '{"spec":{"source":{"git":{"ref":"master"}},"strategy":{"sourceStrategy":{"incremental":true,"env": [{"name": "MAVEN_MIRROR_URL","value": "http://nexus.ci.svc.cluster.local:8081/content/groups/public"}]}}}}'
-oc start-build master
-oc expose svc master
+oc new-app -n eap-integration --name=master -e MAVEN_MIRROR_URL=http://nexus.ci.svc.cluster.local/content/groups/public openshift/jboss-eap70-openshift~https://github.com/j1cken/java-rs-ex.git
+oc cancel-build -n eap-integration master-1
+oc patch -n eap-integration bc master -p '{"spec":{"source":{"git":{"ref":"master"}},"strategy":{"sourceStrategy":{"incremental":true,"env": [{"name": "MAVEN_MIRROR_URL","value": "http://nexus.ci.svc.cluster.local:8081/content/groups/public"}]}}}}'
+oc start-build -n eap-integration master
+oc expose -n eap-integration svc master
 
 echo 'creating new application v2'
-oc new-app --name=v2 -e MAVEN_MIRROR_URL=http://nexus.ci.svc.cluster.local/content/groups/public openshift/jboss-eap70-openshift~https://github.com/j1cken/java-rs-ex.git
-oc cancel-build v2-1
-oc patch bc v2 -p '{"spec":{"source":{"git":{"ref":"v2"}},"strategy":{"sourceStrategy":{"incremental":true,"env": [{"name": "MAVEN_MIRROR_URL","value": "http://nexus.ci.svc.cluster.local:8081/content/groups/public"}]}}}}'
-oc start-build v2
-oc expose svc v2
+oc new-app -n eap-integration --name=v2 -e MAVEN_MIRROR_URL=http://nexus.ci.svc.cluster.local/content/groups/public openshift/jboss-eap70-openshift~https://github.com/j1cken/java-rs-ex.git
+oc cancel-build -n eap-integration v2-1
+oc patch -n eap-integration bc v2 -p '{"spec":{"source":{"git":{"ref":"v2"}},"strategy":{"sourceStrategy":{"incremental":true,"env": [{"name": "MAVEN_MIRROR_URL","value": "http://nexus.ci.svc.cluster.local:8081/content/groups/public"}]}}}}'
+oc start-build -n eap-integration v2
+oc expose -n eap-integration svc v2
 
+read -p 'creating UAT environment ... <return> to continue, <Ctrl-c> to cancel' -n 1 -r
 echo 'creating new project eap-uat'
-#oc new-project eap-uat
-echo 'creating new project eap-production'
-#oc new-project eap-production
+oc new-project eap-uat
+oc process -n eap-uat -f templates/helloworld.template.json -v environment=eap-uat -v app=helloworld -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
 
-echo '*** deleting all resources ***'
-read
+echo 'creating new project eap-production'
+oc new-project eap-production
+oc process -n eap-production -f templates/helloworld.template.json -v environment=eap-production -v app=blue -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
+oc process -n eap-production -f templates/helloworld.template.json -v environment=eap-production -v app=green -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
+oc delete -n eap-production route blue
+oc delete -n eap-production route green
+oc expose -n eap-production svc blue --hostname=www-production.rhcloud.example.com
+
+read -p 'creating Jenkins build pipeline' -n 1 -r
+curl -k -u admin:password -XPOST -d @jenkins-jobs/build-master 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-build-master' -H "Content-Type: application/xml"
+curl -k -u admin:password -XPOST -d @jenkins-jobs/build-v2 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-build-v2' -H "Content-Type: application/xml"
+curl -k -u admin:password -XPOST -d @jenkins-jobs/promote-i-u-master 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-integration-to-uat-master' -H "Content-Type: application/xml"
+curl -k -u admin:password -XPOST -d @jenkins-jobs/promote-i-u-v2 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-integration-to-uat-v2' -H "Content-Type: application/xml"
+curl -k -u admin:password -XPOST -d @jenkins-jobs/promote-u-p-master 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-uat-to-production-master' -H "Content-Type: application/xml"
+curl -k -u admin:password -XPOST -d @jenkins-jobs/promote-u-p-v2 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-uat-to-production-v2' -H "Content-Type: application/xml"
+
+read -p '*** WARNING *** deleting all generated resources? Really continue?' -n 1 -r
 
 oc delete project eap-integration
 oc delete project eap-uat
