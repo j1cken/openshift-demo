@@ -20,6 +20,19 @@ bash demo
 ```
 If u want to debug the demo script just use `bash -x demo`.
 
+## Outcome
+
+The demo script will create the following projects:
+* eap-integration
+* eap-uat
+* eap-production
+
+Namespace 'eap-integration' will host two applications based on different source code branches:
+* master
+* v2
+
+Namespace 'ci' will be used to promote images through the above stages. Jenkins jobs will be created automatically during the script. Please obey the pre-reqs.
+
 ## Topics covered
 + incremental builds
 + use OSCP internal Nexus artifact repository for faster builds
