@@ -142,8 +142,10 @@
                   }
                 ],
                 "readinessProbe": {
-                  "tcpSocket": {
-                    "port": 9990
+                  "httpGet": {
+                    "path": "/rest/json",
+                    "port": 8080,
+                    "scheme": "HTTP"
                   },
                   "initialDelaySeconds": 15,
                   "timeoutSeconds": 1
