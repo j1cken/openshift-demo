@@ -46,6 +46,8 @@ read -p 'setup policies for authorization ...'
 oc policy add-role-to-user edit system:serviceaccount:ci:default -n eap-production
 oc policy add-role-to-user edit system:serviceaccount:ci:default -n eap-uat
 oc policy add-role-to-user edit system:serviceaccount:ci:default -n eap-integration
+oc policy add-role-to-user system:image-puller system:serviceaccount:eap-uat:default -n eap-integration
+oc policy add-role-to-user system:image-puller system:serviceaccount:eap-production:default -n eap-integration
 
 read -p 'creating Jenkins build pipeline' -n 1 -r
 curl -k -u admin:password -XPOST --data-binary @jenkins-jobs/build-master 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-build-master' -H "Content-Type: application/xml"
