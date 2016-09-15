@@ -26,9 +26,9 @@
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.13">
     <script>node {
     stage &apos;Promote&apos;
-    openshiftTag alias: &apos;false&apos;, apiURL: &apos;&apos;, authToken: &apos;&apos;, destStream: &apos;helloworld&apos;, destTag: &apos;v2&apos;, destinationAuthToken: &apos;&apos;, destinationNamespace: &apos;uat&apos;, namespace: &apos;integration&apos;, srcStream: &apos;helloworld&apos;, srcTag: &apos;v2&apos;, verbose: &apos;false&apos;
+    openshiftTag alias: &apos;false&apos;, apiURL: &apos;&apos;, authToken: &apos;&apos;, destStream: &apos;helloworld&apos;, destTag: &apos;v2&apos;, destinationAuthToken: &apos;&apos;, destinationNamespace: &apos;eap-uat&apos;, namespace: &apos;eap-integration&apos;, srcStream: &apos;v2&apos;, srcTag: &apos;latest&apos;, verbose: &apos;false&apos;
     stage &apos;Deploy&apos;
-    openshiftTag alias: &apos;false&apos;, apiURL: &apos;&apos;, authToken: &apos;&apos;, destStream: &apos;helloworld&apos;, destTag: &apos;latest&apos;, destinationAuthToken: &apos;&apos;, destinationNamespace: &apos;uat&apos;, namespace: &apos;uat&apos;, srcStream: &apos;helloworld&apos;, srcTag: &apos;v2&apos;, verbose: &apos;false&apos;
+    openshiftTag alias: &apos;false&apos;, apiURL: &apos;&apos;, authToken: &apos;&apos;, destStream: &apos;helloworld&apos;, destTag: &apos;latest&apos;, destinationAuthToken: &apos;&apos;, destinationNamespace: &apos;eap-uat&apos;, namespace: &apos;eap-uat&apos;, srcStream: &apos;helloworld&apos;, srcTag: &apos;v2&apos;, verbose: &apos;false&apos;
 }</script>
     <sandbox>false</sandbox>
   </definition>

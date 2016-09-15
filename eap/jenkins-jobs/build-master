@@ -1,4 +1,3 @@
-
 <?xml version='1.0' encoding='UTF-8'?>
 <flow-definition plugin="workflow-job@2.6">
   <actions/>
@@ -36,10 +35,10 @@ stage &apos;Test&apos;
 echo &apos;unit testing&apos;
 
 stage &apos;Deploy&apos;
-openshiftBuild apiURL: &apos;&apos;, authToken: &apos;&apos;, bldCfg: &apos;master&apos;, buildName: &apos;&apos;, checkForTriggeredDeployments: &apos;false&apos;, commitID: &apos;&apos;, namespace: &apos;integration&apos;, showBuildLogs: &apos;false&apos;, verbose: &apos;false&apos;, waitTime: &apos;&apos;
+openshiftBuild apiURL: &apos;&apos;, authToken: &apos;&apos;, bldCfg: &apos;master&apos;, buildName: &apos;&apos;, checkForTriggeredDeployments: &apos;false&apos;, commitID: &apos;&apos;, namespace: &apos;eap-integration&apos;, showBuildLogs: &apos;false&apos;, verbose: &apos;false&apos;, waitTime: &apos;&apos;
 
 stage &apos;UAT Release&apos;
-openshiftTag alias: &apos;false&apos;, apiURL: &apos;&apos;, authToken: &apos;&apos;, destStream: &apos;helloworld&apos;, destTag: &apos;master&apos;, destinationAuthToken: &apos;&apos;, destinationNamespace: &apos;integration&apos;, namespace: &apos;integration&apos;, srcStream: &apos;master&apos;, srcTag: &apos;latest&apos;, verbose: &apos;false&apos;
+openshiftTag alias: &apos;false&apos;, apiURL: &apos;&apos;, authToken: &apos;&apos;, destStream: &apos;helloworld&apos;, destTag: &apos;master&apos;, destinationAuthToken: &apos;&apos;, destinationNamespace: &apos;eap-integration&apos;, namespace: &apos;eap-integration&apos;, srcStream: &apos;master&apos;, srcTag: &apos;latest&apos;, verbose: &apos;false&apos;
 }</script>
     <sandbox>false</sandbox>
   </definition>
