@@ -40,15 +40,27 @@ oc delete -n eap-production route blue
 oc delete -n eap-production route green
 oc expose -n eap-production svc blue --hostname=www-production.rhcloud.example.com
 
+read -p 'setup policies for authorization ...'
+oc policy add-role-to-user edit system:serviceaccount:ci:default -n eap-production
+oc policy add-role-to-user edit system:serviceaccount:ci:default -n eap-uat
+oc policy add-role-to-user edit system:serviceaccount:ci:default -n eap-integration
+
 read -p 'creating Jenkins build pipeline' -n 1 -r
-curl -k -u admin:password -XPOST -d @jenkins-jobs/build-master 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-build-master' -H "Content-Type: application/xml"
-curl -k -u admin:password -XPOST -d @jenkins-jobs/build-v2 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-build-v2' -H "Content-Type: application/xml"
-curl -k -u admin:password -XPOST -d @jenkins-jobs/promote-i-u-master 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-integration-to-uat-master' -H "Content-Type: application/xml"
-curl -k -u admin:password -XPOST -d @jenkins-jobs/promote-i-u-v2 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-integration-to-uat-v2' -H "Content-Type: application/xml"
-curl -k -u admin:password -XPOST -d @jenkins-jobs/promote-u-p-master 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-uat-to-production-master' -H "Content-Type: application/xml"
-curl -k -u admin:password -XPOST -d @jenkins-jobs/promote-u-p-v2 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-uat-to-production-v2' -H "Content-Type: application/xml"
+curl -k -u admin:password -XPOST --data-binary @jenkins-jobs/build-master 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-build-master' -H "Content-Type: application/xml"
+curl -k -u admin:password -XPOST --data-binary @jenkins-jobs/build-v2 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-build-v2' -H "Content-Type: application/xml"
+curl -k -u admin:password -XPOST --data-binary @jenkins-jobs/promote-i-u-master 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-integration-to-uat-master' -H "Content-Type: application/xml"
+curl -k -u admin:password -XPOST --data-binary @jenkins-jobs/promote-i-u-v2 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-integration-to-uat-v2' -H "Content-Type: application/xml"
+curl -k -u admin:password -XPOST --data-binary @jenkins-jobs/promote-u-p-master 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-uat-to-production-master' -H "Content-Type: application/xml"
+curl -k -u admin:password -XPOST --data-binary @jenkins-jobs/promote-u-p-v2 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-uat-to-production-v2' -H "Content-Type: application/xml"
 
 read -p '*** WARNING *** deleting all generated resources? Really continue?' -n 1 -r
+
+curl -k -u admin:password -XPOST  https://jenkins-ci.rhcloud.example.com/job/eap-build-master/doDelete
+curl -k -u admin:password -XPOST  https://jenkins-ci.rhcloud.example.com/job/eap-build-v2/doDelete
+curl -k -u admin:password -XPOST  https://jenkins-ci.rhcloud.example.com/job/eap-promote-integration-to-uat-master/doDelete
+curl -k -u admin:password -XPOST  https://jenkins-ci.rhcloud.example.com/job/eap-promote-integration-to-uat-v2/doDelete
+curl -k -u admin:password -XPOST  https://jenkins-ci.rhcloud.example.com/job/eap-promote-uat-to-production-master/doDelete
+curl -k -u admin:password -XPOST  https://jenkins-ci.rhcloud.example.com/job/eap-promote-uat-to-production-v2/doDelete
 
 oc delete project eap-integration
 oc delete project eap-uat
