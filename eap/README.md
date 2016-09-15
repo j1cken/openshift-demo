@@ -2,20 +2,23 @@
 ## Prerequisites
 + Namespace called 'ci'
   + deployed application called ['nexus'](https://github.com/j1cken/nexus-ose/)
-  + deployed application called ['jenkins'](../jenkins/)
+  + deployed OSCP instant application called ['jenkins'](../jenkins/)
     + Plugins needed
       + [OpenShift Pipeline Jenkins Plugin](https://wiki.jenkins-ci.org/display/JENKINS/OpenShift+Pipeline+Plugin)
+        + needs to be uploaded manually
+        + version >=1.0.22 tested to be working
       + [Build Flow plugin](https://wiki.jenkins-ci.org/display/JENKINS/Build+Flow+Plugin)
-      + Pipeline
-      + Pipeline: Basic Steps
-      + Pipeline: Nodes and Processes
-      + Build Flow Extensions
+      + [Pipeline](https://wiki.jenkins-ci.org/display/JENKINS/Pipeline+Plugin)
+      + [Pipeline: Basic Steps](https://wiki.jenkins-ci.org/display/JENKINS/Pipeline+Basic+Steps+Plugin)
+      + [Pipeline: Nodes and Processes](https://wiki.jenkins-ci.org/display/JENKINS/Pipeline+Nodes+and+Processes+Plugin)
+      + [Build Flow Extensions](https://wiki.jenkins-ci.org/display/JENKINS/Build+Flow+Extensions+Plugin)
 
 ## How to run the demo
 ```shell
 oc login https://<your_oscp_instance>:8443
-bash -x demo
+bash demo
 ```
+If u want to debug the demo script just use `bash -x demo`.
 
 ## Topics covered
 + incremental builds
