@@ -8,31 +8,33 @@ fi
 registry_address=`oc get -n default svc docker-registry --template='{{.spec.clusterIP}}'`
 wildcard_domain=$1
 
-exit
-
 read -p 'creating integration environment ... <return> to continue, <Ctrl-c> to cancel' -n 1 -r
 oc new-project eap-integration
 
-echo 'creating new application master'
+read -p 'creating new application master' -n 1 -r
 oc new-app -n eap-integration --name=master -e MAVEN_MIRROR_URL=http://nexus.ci.svc.cluster.local/content/groups/public openshift/jboss-eap70-openshift~https://github.com/j1cken/java-rs-ex.git
 oc cancel-build -n eap-integration master-1
 oc patch -n eap-integration bc master -p '{"spec":{"source":{"git":{"ref":"master"}},"strategy":{"sourceStrategy":{"incremental":true,"env": [{"name": "MAVEN_MIRROR_URL","value": "http://nexus.ci.svc.cluster.local:8081/content/groups/public"}]}}}}'
 oc start-build -n eap-integration master
 oc expose -n eap-integration svc master
+echo 'Check with:'
+echo 'for i in {1..10000};do curl http://master-eap-integration.rhcloud.example.com/rest/json;echo "";sleep 0.4;done'
 
-echo 'creating new application v2'
+read -p 'creating new application v2' -n 1 -r
 oc new-app -n eap-integration --name=v2 -e MAVEN_MIRROR_URL=http://nexus.ci.svc.cluster.local/content/groups/public openshift/jboss-eap70-openshift~https://github.com/j1cken/java-rs-ex.git
 oc cancel-build -n eap-integration v2-1
 oc patch -n eap-integration bc v2 -p '{"spec":{"source":{"git":{"ref":"v2"}},"strategy":{"sourceStrategy":{"incremental":true,"env": [{"name": "MAVEN_MIRROR_URL","value": "http://nexus.ci.svc.cluster.local:8081/content/groups/public"}]}}}}'
 oc start-build -n eap-integration v2
 oc expose -n eap-integration svc v2
+echo 'Check with:'
+echo 'for i in {1..10000};do curl http://v2-eap-integration.rhcloud.example.com/rest/json;echo "";sleep 0.4;done'
 
 read -p 'creating UAT environment ... <return> to continue, <Ctrl-c> to cancel' -n 1 -r
 echo 'creating new project eap-uat'
 oc new-project eap-uat
 oc process -n eap-uat -f templates/helloworld.template.json -v environment=eap-uat -v app=helloworld -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
 
-echo 'creating new project eap-production'
+read -p 'creating new project eap-production' -n 1 -r
 oc new-project eap-production
 oc process -n eap-production -f templates/helloworld.template.json -v environment=eap-production -v app=blue -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
 oc process -n eap-production -f templates/helloworld.template.json -v environment=eap-production -v app=green -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
