@@ -1,1 +1,1 @@
-oc patch route blue -p '{"spec":{"to":{"name":"blue"}}}' -n production
+oc patch route blue -p '{"spec":{"to":{"name":"blue"}}}' -n eap-production
