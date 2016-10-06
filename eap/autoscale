@@ -1,1 +1,2 @@
-oc autoscale -n eap-production dc/blue --min=2 --max=4
+oc autoscale -n eap-production dc/blue --cpu-percent=20 --min=2 --max=4
+oc get hpa -n eap-production
