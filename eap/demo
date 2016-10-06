@@ -32,12 +32,12 @@ echo 'for i in {1..10000};do curl http://v2-eap-integration.rhcloud.example.com/
 read -p 'creating UAT environment ... <return> to continue, <Ctrl-c> to cancel' -n 1 -r
 echo 'creating new project eap-uat'
 oc new-project eap-uat
-oc process -n eap-uat -f templates/helloworld.template.json -v environment=eap-uat -v app=helloworld -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
+oc process -n eap-uat -f templates/helloworld.template.json -v environment=eap-uat -v appl=helloworld -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
 
 read -p 'creating new project eap-production' -n 1 -r
 oc new-project eap-production
-oc process -n eap-production -f templates/helloworld.template.json -v environment=eap-production -v app=blue -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
-oc process -n eap-production -f templates/helloworld.template.json -v environment=eap-production -v app=green -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
+oc process -n eap-production -f templates/helloworld.template.json -v environment=eap-production -v appl=blue -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
+oc process -n eap-production -f templates/helloworld.template.json -v environment=eap-production -v appl=green -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
 oc delete -n eap-production route blue
 oc delete -n eap-production route green
 oc expose -n eap-production svc blue --hostname=www-production.rhcloud.example.com

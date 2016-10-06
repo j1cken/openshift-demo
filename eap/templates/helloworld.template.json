@@ -9,11 +9,11 @@
       "kind": "ImageStream",
       "apiVersion": "v1",
       "metadata": {
-        "name": "${app}",
+        "name": "${appl}",
         "generation": 1,
         "creationTimestamp": null,
         "labels": {
-          "app": "${app}"
+          "appl": "${appl}"
         }
       },
       "spec": {
@@ -23,7 +23,7 @@
             "annotations": null,
             "from": {
               "kind": "DockerImage",
-              "name": "${registry_address}:5000/${environment}/${app}:latest"
+              "name": "${registry_address}:5000/${environment}/${appl}:latest"
             },
             "importPolicy": {}
           }
@@ -34,10 +34,10 @@
       "kind": "Service",
       "apiVersion": "v1",
       "metadata": {
-        "name": "${app}",
+        "name": "${appl}",
         "creationTimestamp": null,
         "labels": {
-          "app": "${app}"
+          "appl": "${appl}"
         }
       },
       "spec": {
@@ -50,7 +50,7 @@
           }
         ],
         "selector": {
-          "deploymentconfig": "${app}"
+          "appl": "${appl}"
         },
         "type": "ClusterIP",
         "sessionAffinity": "None"
@@ -63,17 +63,17 @@
       "kind": "Route",
       "apiVersion": "v1",
       "metadata": {
-        "name": "${app}",
+        "name": "${appl}",
         "creationTimestamp": null,
         "labels": {
-          "app": "${app}"
+          "appl": "${appl}"
         }
       },
       "spec": {
-        "host": "${app}-${environment}.${wildcard_domain}",
+        "host": "${appl}-${environment}.${wildcard_domain}",
         "to": {
           "kind": "Service",
-          "name": "${app}"
+          "name": "${appl}"
         },
         "port": {
           "targetPort": "8080-tcp"
@@ -84,9 +84,9 @@
       "kind": "DeploymentConfig",
       "apiVersion": "v1",
       "metadata": {
-        "name": "${app}",
+        "name": "${appl}",
         "labels": {
-          "app": "${app}"
+          "appl": "${appl}"
         }
       },
       "spec": {
@@ -107,11 +107,11 @@
             "imageChangeParams": {
               "automatic": true,
               "containerNames": [
-                "${app}"
+                "${appl}"
               ],
               "from": {
                 "kind": "ImageStreamTag",
-                "name": "${app}:latest"
+                "name": "${appl}:latest"
               }
             }
           },
@@ -122,19 +122,19 @@
         "replicas": 1,
         "test": false,
         "selector": {
-          "deploymentconfig": "${app}"
+          "appl": "${appl}"
         },
         "template": {
           "metadata": {
             "labels": {
-              "app": "${app}"
+              "appl": "${appl}"
             }
           },
           "spec": {
             "containers": [
               {
-                "name": "${app}",
-                "image": "${registry_address}:5000/${environment}/${app}:latest",
+                "name": "${appl}",
+                "image": "${registry_address}:5000/${environment}/${appl}:latest",
                 "ports": [
                   {
                     "containerPort": 8080,
@@ -174,9 +174,9 @@
             "required": true
         },
         {
-            "name": "app",
-            "displayName": "Name of the application",
-            "description": "The name of the application which is going to be deployed.",
+            "name": "appl",
+            "displayName": "Name of the appllication",
+            "description": "The name of the appllication which is going to be deployed.",
             "value": "helloworld",
             "required": true
         },
