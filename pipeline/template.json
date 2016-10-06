@@ -47,13 +47,6 @@
                          "generic": {
                              "secret": "ZLL72mfQ5RK5YOFzdt7L"
                          }
-                     },
-                     {
-                         "type": "ConfigChange"
-                     },
-                     {
-                         "type": "ImageChange",
-                         "imageChange": {}
                      }
                  ],
                  "source": {
@@ -163,9 +156,6 @@
                     "resources": {}
                 },
                 "triggers": [
-                    {
-                        "type": "ConfigChange"
-                    },
                     {
                         "type": "ImageChange",
                         "imageChangeParams": {
