@@ -10,12 +10,13 @@ wildcard_domain=$1
 
 read -p 'creating integration environment ... <return> to continue, <Ctrl-c> to cancel' -n 1 -r
 oc new-project eap-integration
+oc create -n eap-integration -f pipeline.json
 
 read -p 'creating new application master' -n 1 -r
 oc new-app -n eap-integration --name=master -e MAVEN_MIRROR_URL=http://nexus.ci.svc.cluster.local/content/groups/public openshift/jboss-eap70-openshift~https://github.com/j1cken/java-rs-ex.git
 oc cancel-build -n eap-integration master-1
 oc patch -n eap-integration bc master -p '{"spec":{"source":{"git":{"ref":"master"}},"strategy":{"sourceStrategy":{"incremental":true,"env": [{"name": "MAVEN_MIRROR_URL","value": "http://nexus.ci.svc.cluster.local:8081/content/groups/public"}]}}}}'
-oc start-build -n eap-integration master
+#oc start-build -n eap-integration master
 oc expose -n eap-integration svc master
 echo 'Check with:'
 echo 'for i in {1..10000};do curl http://master-eap-integration.rhcloud.example.com/rest/json;echo "";sleep 0.4;done'
@@ -24,7 +25,7 @@ read -p 'creating new application v2' -n 1 -r
 oc new-app -n eap-integration --name=v2 -e MAVEN_MIRROR_URL=http://nexus.ci.svc.cluster.local/content/groups/public openshift/jboss-eap70-openshift~https://github.com/j1cken/java-rs-ex.git
 oc cancel-build -n eap-integration v2-1
 oc patch -n eap-integration bc v2 -p '{"spec":{"source":{"git":{"ref":"v2"}},"strategy":{"sourceStrategy":{"incremental":true,"env": [{"name": "MAVEN_MIRROR_URL","value": "http://nexus.ci.svc.cluster.local:8081/content/groups/public"}]}}}}'
-oc start-build -n eap-integration v2
+#oc start-build -n eap-integration v2
 oc expose -n eap-integration svc v2
 echo 'Check with:'
 echo 'for i in {1..10000};do curl http://v2-eap-integration.rhcloud.example.com/rest/json;echo "";sleep 0.4;done'
@@ -43,28 +44,13 @@ oc delete -n eap-production route green
 oc expose -n eap-production svc blue --hostname=www-production.rhcloud.example.com
 
 read -p 'setup policies for authorization ...'
-oc policy add-role-to-user edit system:serviceaccount:ci:default -n eap-production
-oc policy add-role-to-user edit system:serviceaccount:ci:default -n eap-uat
-oc policy add-role-to-user edit system:serviceaccount:ci:default -n eap-integration
+oc policy add-role-to-user edit system:serviceaccount:eap-integration:jenkins -n eap-production
+oc policy add-role-to-user edit system:serviceaccount:eap-integration:jenkins -n eap-uat
+oc policy add-role-to-user edit system:serviceaccount:eap-integration:jenkins -n eap-integration
 oc policy add-role-to-user system:image-puller system:serviceaccount:eap-uat:default -n eap-integration
 oc policy add-role-to-user system:image-puller system:serviceaccount:eap-production:default -n eap-integration
 
-read -p 'creating Jenkins build pipeline' -n 1 -r
-curl -k -u admin:password -XPOST --data-binary @jenkins-jobs/build-master 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-build-master' -H "Content-Type: application/xml"
-curl -k -u admin:password -XPOST --data-binary @jenkins-jobs/build-v2 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-build-v2' -H "Content-Type: application/xml"
-curl -k -u admin:password -XPOST --data-binary @jenkins-jobs/promote-i-u-master 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-integration-to-uat-master' -H "Content-Type: application/xml"
-curl -k -u admin:password -XPOST --data-binary @jenkins-jobs/promote-i-u-v2 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-integration-to-uat-v2' -H "Content-Type: application/xml"
-curl -k -u admin:password -XPOST --data-binary @jenkins-jobs/promote-u-p-master 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-uat-to-production-master' -H "Content-Type: application/xml"
-curl -k -u admin:password -XPOST --data-binary @jenkins-jobs/promote-u-p-v2 'https://jenkins-ci.rhcloud.example.com/createItem?name=eap-promote-uat-to-production-v2' -H "Content-Type: application/xml"
-
 read -p '*** WARNING *** deleting all generated resources? Really continue?' -n 1 -r
-
-curl -k -u admin:password -XPOST  https://jenkins-ci.rhcloud.example.com/job/eap-build-master/doDelete
-curl -k -u admin:password -XPOST  https://jenkins-ci.rhcloud.example.com/job/eap-build-v2/doDelete
-curl -k -u admin:password -XPOST  https://jenkins-ci.rhcloud.example.com/job/eap-promote-integration-to-uat-master/doDelete
-curl -k -u admin:password -XPOST  https://jenkins-ci.rhcloud.example.com/job/eap-promote-integration-to-uat-v2/doDelete
-curl -k -u admin:password -XPOST  https://jenkins-ci.rhcloud.example.com/job/eap-promote-uat-to-production-master/doDelete
-curl -k -u admin:password -XPOST  https://jenkins-ci.rhcloud.example.com/job/eap-promote-uat-to-production-v2/doDelete
 
 oc delete project eap-integration
 oc delete project eap-uat

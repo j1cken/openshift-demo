@@ -147,8 +147,8 @@
                     "port": 8080,
                     "scheme": "HTTP"
                   },
-                  "initialDelaySeconds": 15,
-                  "timeoutSeconds": 1
+                  "initialDelaySeconds": 3,
+                  "timeoutSeconds": 2
                 },
                 "resources": {},
                 "terminationMessagePath": "/dev/termination-log",
