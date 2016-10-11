@@ -1,0 +1,42 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {},
+    "items": [
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "nodejs-ex-pipeline",
+                "labels": {
+                    "app": "nodejs-ex"
+                },
+                "annotations": {
+                    "pipeline.alpha.openshift.io/uses": "[{\"name\": \"nodejs-ex\", \"namespace\": \"\", \"kind\": \"DeploymentConfig\"}]"
+                }
+            },
+            "spec": {
+                "triggers": [
+                    {
+                        "type": "GitHub",
+                        "github": {
+                            "secret": "EgXVqyOOobmMzjVzQHSh"
+                        }
+                    },
+                    {
+                        "type": "Generic",
+                        "generic": {
+                            "secret": "bz6uJc9u-0-58EoYKgL3"
+                        }
+                    }
+                ],
+                "strategy": {
+                  "type": "JenkinsPipeline",
+                  "jenkinsPipelineStrategy": {
+                    "jenkinsfile": "node {\nstage 'build'\nopenshiftBuild(buildConfig: 'nodejs-ex', showBuildLogs: 'true')\nstage 'deploy'\nopenshiftDeploy(deploymentConfig: 'nodejs-ex')\nopenshiftScale(deploymentConfig: 'nodejs-ex',replicaCount: '2')\n}"
+                  }
+                }
+            }
+        }
+    ]
+}

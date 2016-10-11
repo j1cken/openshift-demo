@@ -83,12 +83,11 @@
             "apiVersion": "v1",
             "metadata": {
                 "name": "nodejs-ex-pipeline",
-                "creationTimestamp": null,
                 "labels": {
                     "app": "nodejs-ex"
                 },
                 "annotations": {
-                    "openshift.io/generated-by": "OpenShiftNewApp"
+                    "pipeline.alpha.openshift.io/uses": "[{\"name\": \"nodejs-ex\", \"namespace\": \"\", \"kind\": \"DeploymentConfig\"}]"
                 }
             },
             "spec": {
@@ -104,38 +103,14 @@
                         "generic": {
                             "secret": "bz6uJc9u-0-58EoYKgL3"
                         }
-                    },
-                    {
-                        "type": "ConfigChange"
-                    },
-                    {
-                        "type": "ImageChange",
-                        "imageChange": {}
                     }
                 ],
-                "source": {
-                    "type": "Git",
-                    "git": {
-                        "uri": "https://github.com/j1cken/nodejs-ex.git"
-                    }
-                },
                 "strategy": {
-          "type": "JenkinsPipeline",
-          "jenkinsPipelineStrategy": {
-            "jenkinsfile": "node('maven') {\nstage 'build'\nopenshiftBuild(buildConfig: 'nodejs-ex', showBuildLogs: 'true')\nstage 'deploy'\nopenshiftDeploy(deploymentConfig: 'nodejs-ex')\n}"
-          }
-                },
-                "output": {
-                    "to": {
-                        "kind": "ImageStreamTag",
-                        "name": "nodejs-ex:latest"
-                    }
-                },
-                "resources": {},
-                "postCommit": {}
-            },
-            "status": {
-                "lastVersion": 0
+                  "type": "JenkinsPipeline",
+                  "jenkinsPipelineStrategy": {
+                    "jenkinsfile": "node {\nstage 'build'\nopenshiftBuild(buildConfig: 'nodejs-ex', showBuildLogs: 'true')\nstage 'deploy'\nopenshiftDeploy(deploymentConfig: 'nodejs-ex')\nopenshiftScale(deploymentConfig: 'nodejs-ex',replicaCount: '2')\n}"
+                  }
+                }
             }
         },
         {
@@ -156,19 +131,19 @@
                     "resources": {}
                 },
                 "triggers": [
-                    {
-                        "type": "ImageChange",
-                        "imageChangeParams": {
-                            "automatic": true,
-                            "containerNames": [
-                                "nodejs-ex"
-                            ],
-                            "from": {
-                                "kind": "ImageStreamTag",
-                                "name": "nodejs-ex:latest"
-                            }
-                        }
-                    }
+                              {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "nodejs-ex"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "nodejs-ex:latest"
+              }
+            }
+          }
                 ],
                 "replicas": 1,
                 "test": false,
@@ -192,7 +167,7 @@
                         "containers": [
                             {
                                 "name": "nodejs-ex",
-                                "image": "nodejs-ex:latest",
+                                "image": " ",
                                 "ports": [
                                     {
                                         "containerPort": 8080,
@@ -204,8 +179,7 @@
                         ]
                     }
                 }
-            },
-            "status": {}
+            }
         },
         {
             "kind": "Service",
