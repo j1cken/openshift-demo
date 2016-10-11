@@ -1,5 +1,8 @@
 #!/bin/bash
 oc new-project pipeline
-oc create -f template.json
+oc create -f production.json
+oc process -f template.json | oc create -f -
+oc process -f template.json -v branch=v2 -v svc_name=green | oc create -f -
 read -p 'start build ... <return> to continue, <Ctrl-c> to cancel' -n 1 -r
-oc start-build nodejs-ex-pipeline
+oc start-build nodejs-ex-master-pipeline
+oc start-build nodejs-ex-v2-pipeline

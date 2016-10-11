@@ -1,0 +1,47 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {},
+    "items": [{
+        "kind": "Service",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "production",
+            "creationTimestamp": null,
+            "labels": {
+                "app": "production"
+            },
+            "annotations": {
+                "openshift.io/generated-by": "OpenShiftNewApp"
+            }
+        },
+        "spec": {
+            "ports": [{
+                "name": "8080-tcp",
+                "protocol": "TCP",
+                "port": 8080,
+                "targetPort": 8080
+            }],
+            "selector": {
+                "app": "nodejs-ex-master",
+                "deploymentconfig": "nodejs-ex-master"
+            }
+        }
+    }, {
+        "kind": "Route",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "production",
+            "creationTimestamp": null
+        },
+        "spec": {
+            "to": {
+                "kind": "Service",
+                "name": "production"
+            },
+            "tls": {
+                "termination": "edge"
+            }
+        }
+    }]
+}

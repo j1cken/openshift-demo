@@ -1,230 +1,225 @@
-    {
-        "kind": "List",
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {},
+    "objects": [{
+        "kind": "ImageStream",
         "apiVersion": "v1",
-        "metadata": {},
-        "items": [
-            {
-                "kind": "ImageStream",
-                "apiVersion": "v1",
-                "metadata": {
-                    "name": "nodejs-ex",
-                    "creationTimestamp": null,
-                    "labels": {
-                        "app": "nodejs-ex"
-                    },
-                    "annotations": {
-                        "openshift.io/generated-by": "OpenShiftNewApp"
-                    }
-                },
-                "spec": {},
-                "status": {
-                    "dockerImageRepository": ""
+        "metadata": {
+            "name": "nodejs-ex-${branch}",
+            "creationTimestamp": null,
+            "labels": {
+                "app": "nodejs-ex-${branch}"
+            },
+            "annotations": {
+                "openshift.io/generated-by": "OpenShiftNewApp"
+            }
+        },
+        "spec": {},
+        "status": {
+            "dockerImageRepository": ""
+        }
+    }, {
+        "kind": "BuildConfig",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "nodejs-ex-${branch}",
+            "creationTimestamp": null,
+            "labels": {
+                "app": "nodejs-ex-${branch}"
+            },
+            "annotations": {
+                "openshift.io/generated-by": "OpenShiftNewApp"
+            }
+        },
+        "spec": {
+            "triggers": [{
+                "type": "GitHub",
+                "github": {
+                    "secret": "7Zdi9FuQz2UYo7o3wn0S"
+                }
+            }, {
+                "type": "Generic",
+                "generic": {
+                    "secret": "ZLL72mfQ5RK5YOFzdt7L"
+                }
+            }],
+            "source": {
+                "type": "Git",
+                "git": {
+                    "uri": "https://github.com/j1cken/nodejs-ex.git",
+                    "ref": "${branch}"
                 }
             },
-            {
-                "kind": "BuildConfig",
-                "apiVersion": "v1",
-                "metadata": {
-                    "name": "nodejs-ex",
-                    "creationTimestamp": null,
-                    "labels": {
-                        "app": "nodejs-ex"
-                    },
-                    "annotations": {
-                        "openshift.io/generated-by": "OpenShiftNewApp"
-                    }
-                },
-                "spec": {
-                    "triggers": [
-                        {
-                            "type": "GitHub",
-                            "github": {
-                                "secret": "7Zdi9FuQz2UYo7o3wn0S"
-                            }
-                        },
-                        {
-                            "type": "Generic",
-                            "generic": {
-                                "secret": "ZLL72mfQ5RK5YOFzdt7L"
-                            }
-                        }
-                    ],
-                    "source": {
-                        "type": "Git",
-                        "git": {
-                            "uri": "https://github.com/j1cken/nodejs-ex.git"
-                        }
-                    },
-                    "strategy": {
-                        "type": "Source",
-                        "sourceStrategy": {
-                            "from": {
-                                "kind": "ImageStreamTag",
-                                "namespace": "openshift",
-                                "name": "nodejs:4"
-                            }
-                        }
-                    },
-                    "output": {
-                        "to": {
-                            "kind": "ImageStreamTag",
-                            "name": "nodejs-ex:latest"
-                        }
-                    },
-                    "resources": {},
-                    "postCommit": {}
-                }
-            },
-            {
-                "kind": "BuildConfig",
-                "apiVersion": "v1",
-                "metadata": {
-                    "name": "nodejs-ex-pipeline",
-                    "labels": {
-                        "app": "nodejs-ex"
-                    },
-                    "annotations": {
-                        "pipeline.alpha.openshift.io/uses": "[{\"name\": \"nodejs-ex\", \"namespace\": \"\", \"kind\": \"DeploymentConfig\"}]"
-                    }
-                },
-                "spec": {
-                    "triggers": [
-                        {
-                            "type": "GitHub",
-                            "github": {
-                                "secret": "EgXVqyOOobmMzjVzQHSh"
-                            }
-                        },
-                        {
-                            "type": "Generic",
-                            "generic": {
-                                "secret": "bz6uJc9u-0-58EoYKgL3"
-                            }
-                        }
-                    ],
-                    "strategy": {
-                    "type": "JenkinsPipeline",
-                    "jenkinsPipelineStrategy": {
-                        "jenkinsfile": "node {\nstage 'build'\nopenshiftBuild(buildConfig: 'nodejs-ex', showBuildLogs: 'true')\nstage 'deploy'\nopenshiftVerifyDeployment(deploymentConfig: 'nodejs-ex')\nstage 'scale'\nopenshiftScale(deploymentConfig: 'nodejs-ex',replicaCount: '2')\n}"
-                    }
+            "strategy": {
+                "type": "Source",
+                "sourceStrategy": {
+                    "from": {
+                        "kind": "ImageStreamTag",
+                        "namespace": "openshift",
+                        "name": "nodejs:4"
                     }
                 }
             },
-            {
-                "kind": "DeploymentConfig",
-                "apiVersion": "v1",
-                "metadata": {
-                    "name": "nodejs-ex",
-                    "creationTimestamp": null,
-                    "labels": {
-                        "app": "nodejs-ex"
-                    },
-                    "annotations": {
-                        "openshift.io/generated-by": "OpenShiftNewApp"
-                    }
-                },
-                "spec": {
-                    "strategy": {
-                        "resources": {}
-                    },
-                    "triggers": [
-                                {
-                "type": "ImageChange",
-                "imageChangeParams": {
-                "automatic": true,
-                "containerNames": [
-                    "nodejs-ex"
-                ],
-                "from": {
+            "output": {
+                "to": {
                     "kind": "ImageStreamTag",
-                    "name": "nodejs-ex:latest"
+                    "name": "nodejs-ex-${branch}:latest"
                 }
+            },
+            "resources": {},
+            "postCommit": {}
+        }
+    }, {
+        "kind": "BuildConfig",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "nodejs-ex-${branch}-pipeline",
+            "labels": {
+                "app": "nodejs-ex-${branch}"
+            },
+            "annotations": {
+                "pipeline.alpha.openshift.io/uses": "[{\"name\": \"nodejs-ex-${branch}\", \"namespace\": \"\", \"kind\": \"DeploymentConfig\"}]"
+            }
+        },
+        "spec": {
+            "triggers": [{
+                "type": "GitHub",
+                "github": {
+                    "secret": "EgXVqyOOobmMzjVzQHSh"
+                }
+            }, {
+                "type": "Generic",
+                "generic": {
+                    "secret": "bz6uJc9u-0-58EoYKgL3"
+                }
+            }],
+            "strategy": {
+                "type": "JenkinsPipeline",
+                "jenkinsPipelineStrategy": {
+                    "jenkinsfile": "node {\nstage 'build'\nopenshiftBuild(buildConfig: 'nodejs-ex-${branch}', showBuildLogs: 'true')\nstage 'deploy'\nopenshiftVerifyDeployment(deploymentConfig: 'nodejs-ex-${branch}')\nstage 'scale'\nopenshiftScale(deploymentConfig: 'nodejs-ex-${branch}',replicaCount: '2')\n}"
                 }
             }
+        }
+    }, {
+        "kind": "DeploymentConfig",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "nodejs-ex-${branch}",
+            "creationTimestamp": null,
+            "labels": {
+                "app": "nodejs-ex-${branch}"
+            },
+            "annotations": {
+                "openshift.io/generated-by": "OpenShiftNewApp"
+            }
+        },
+        "spec": {
+            "strategy": {
+                "resources": {}
+            },
+            "triggers": [{
+                "type": "ImageChange",
+                "imageChangeParams": {
+                    "automatic": true,
+                    "containerNames": [
+                        "nodejs-ex-${branch}"
                     ],
-                    "replicas": 1,
-                    "test": false,
-                    "selector": {
-                        "app": "nodejs-ex",
-                        "deploymentconfig": "nodejs-ex"
-                    },
-                    "template": {
-                        "metadata": {
-                            "creationTimestamp": null,
-                            "labels": {
-                                "app": "nodejs-ex",
-                                "deploymentconfig": "nodejs-ex"
-                            },
-                            "annotations": {
-                                "openshift.io/container.nodejs-ex.image.entrypoint": "[\"container-entrypoint\",\"/bin/sh\",\"-c\",\"$STI_SCRIPTS_PATH/usage\"]",
-                                "openshift.io/generated-by": "OpenShiftNewApp"
-                            }
-                        },
-                        "spec": {
-                            "containers": [
-                                {
-                                    "name": "nodejs-ex",
-                                    "image": " ",
-                                    "ports": [
-                                        {
-                                            "containerPort": 8080,
-                                            "protocol": "TCP"
-                                        }
-                                    ],
-                                    "resources": {}
-                                }
-                            ]
-                        }
+                    "from": {
+                        "kind": "ImageStreamTag",
+                        "name": "nodejs-ex-${branch}:latest"
                     }
                 }
+            }],
+            "replicas": 1,
+            "test": false,
+            "selector": {
+                "app": "nodejs-ex-${branch}",
+                "deploymentconfig": "nodejs-ex-${branch}"
             },
-            {
+            "template": {
+                "metadata": {
+                    "creationTimestamp": null,
+                    "labels": {
+                        "app": "nodejs-ex-${branch}",
+                        "deploymentconfig": "nodejs-ex-${branch}"
+                    },
+                    "annotations": {
+                        "openshift.io/container.nodejs-ex-${branch}.image.entrypoint": "[\"container-entrypoint\",\"/bin/sh\",\"-c\",\"$STI_SCRIPTS_PATH/usage\"]",
+                        "openshift.io/generated-by": "OpenShiftNewApp"
+                    }
+                },
+                "spec": {
+                    "containers": [{
+                        "name": "nodejs-ex-${branch}",
+                        "image": " ",
+                        "ports": [{
+                            "containerPort": 8080,
+                            "protocol": "TCP"
+                        }],
+                        "resources": {}
+                    }]
+                }
+            }
+        }
+    }, {
         "kind": "Route",
         "apiVersion": "v1",
         "metadata": {
-            "name": "nodejs-ex",
+            "name": "nodejs-ex-${branch}",
             "creationTimestamp": null
         },
         "spec": {
             "to": {
-            "kind": "Service",
-            "name": "nodejs-ex"
+                "kind": "Service",
+                "name": "${svc_name}"
             },
             "tls": {
-            "termination": "edge"
+                "termination": "edge"
             }
         }
-        },
-            {
-                "kind": "Service",
-                "apiVersion": "v1",
-                "metadata": {
-                    "name": "nodejs-ex",
-                    "creationTimestamp": null,
-                    "labels": {
-                        "app": "nodejs-ex"
-                    },
-                    "annotations": {
-                        "openshift.io/generated-by": "OpenShiftNewApp"
-                    }
-                },
-                "spec": {
-                    "ports": [
-                        {
-                            "name": "8080-tcp",
-                            "protocol": "TCP",
-                            "port": 8080,
-                            "targetPort": 8080
-                        }
-                    ],
-                    "selector": {
-                        "app": "nodejs-ex",
-                        "deploymentconfig": "nodejs-ex"
-                    }
-                },
-                "status": {
-                    "loadBalancer": {}
-                }
+    }, {
+        "kind": "Service",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "${svc_name}",
+            "creationTimestamp": null,
+            "labels": {
+                "app": "nodejs-ex-${branch}"
+            },
+            "annotations": {
+                "openshift.io/generated-by": "OpenShiftNewApp"
             }
-        ]
+        },
+        "spec": {
+            "ports": [{
+                "name": "8080-tcp",
+                "protocol": "TCP",
+                "port": 8080,
+                "targetPort": 8080
+            }],
+            "selector": {
+                "app": "nodejs-ex-${branch}",
+                "deploymentconfig": "nodejs-ex-${branch}"
+            }
+        },
+        "status": {
+            "loadBalancer": {}
+        }
+    }],
+    "parameters": [{
+        "name": "branch",
+        "displayName": "Git branch",
+        "description": "The name of the Git branch to build.",
+        "value": "master"
+    },
+    {
+        "name": "svc_name",
+        "displayName": "Service Name",
+        "description": "The name of the service.",
+        "value": "blue"
+    }],
+    "labels": {
+        "template": "nodejs-ex-template"
     }
+}
