@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ $# -ne 1 ]; then
   echo "Usage: $0 wildcard_domain"
-  echo "$0 rhcloud.example.com"
+  echo "$0 192.168.122.109.xip.io"
   exit
 fi
 
@@ -19,7 +19,7 @@ oc patch -n eap-integration bc master -p '{"spec":{"source":{"git":{"ref":"maste
 #oc start-build -n eap-integration master
 oc expose -n eap-integration svc master
 echo 'Check with:'
-echo 'for i in {1..10000};do curl http://master-eap-integration.rhcloud.example.com/rest/json;echo "";sleep 0.4;done'
+echo 'for i in {1..10000};do curl http://master-eap-integration.192.168.122.109.xip.io/rest/json;echo "";sleep 0.4;done'
 
 read -p 'creating new application v2' -n 1 -r
 oc new-app -n eap-integration --name=v2 -e MAVEN_MIRROR_URL=http://nexus.ci.svc.cluster.local/content/groups/public openshift/jboss-eap70-openshift~https://github.com/j1cken/java-rs-ex.git
@@ -28,7 +28,7 @@ oc patch -n eap-integration bc v2 -p '{"spec":{"source":{"git":{"ref":"v2"}},"st
 #oc start-build -n eap-integration v2
 oc expose -n eap-integration svc v2
 echo 'Check with:'
-echo 'for i in {1..10000};do curl http://v2-eap-integration.rhcloud.example.com/rest/json;echo "";sleep 0.4;done'
+echo 'for i in {1..10000};do curl http://v2-eap-integration.192.168.122.109.xip.io/rest/json;echo "";sleep 0.4;done'
 
 read -p 'creating UAT environment ... <return> to continue, <Ctrl-c> to cancel' -n 1 -r
 echo 'creating new project eap-uat'
@@ -41,7 +41,7 @@ oc process -n eap-production -f templates/helloworld.template.json -v environmen
 oc process -n eap-production -f templates/helloworld.template.json -v environment=eap-production -v appl=green -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
 oc delete -n eap-production route blue
 oc delete -n eap-production route green
-oc expose -n eap-production svc blue --hostname=www-production.rhcloud.example.com
+oc expose -n eap-production svc blue --hostname=www-production.192.168.122.109.xip.io
 
 read -p 'setup policies for authorization ...'
 oc policy add-role-to-user edit system:serviceaccount:eap-integration:jenkins -n eap-production
