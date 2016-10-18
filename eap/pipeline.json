@@ -26,6 +26,13 @@
                     "secret": "bz6uJc9u-0-58EoYKgL3"
                 }
             }],
+            "source": {
+                "type": "Git",
+                "git": {
+                    "uri": "https://github.com/j1cken/java-rs-ex.git",
+                    "ref": "master"
+                }
+            },
             "strategy": {
                 "type": "JenkinsPipeline",
                 "jenkinsPipelineStrategy": {
@@ -57,6 +64,13 @@
                     "secret": "bz6uJc9u-0-58EoYKgL3"
                 }
             }],
+            "source": {
+                "type": "Git",
+                "git": {
+                    "uri": "https://github.com/j1cken/java-rs-ex.git",
+                    "ref": "v2"
+                }
+            },
             "strategy": {
                 "type": "JenkinsPipeline",
                 "jenkinsPipelineStrategy": {
