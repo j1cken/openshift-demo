@@ -1,0 +1,14 @@
+#!/bin/bash
+oc new-project jdg
+oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default -n $(oc project -q)
+
+read -p 'creating entries ... <return> to continue, <Ctrl-c> to cancel' -n 1 -r
+rm insert.log >/dev/null
+for i in `seq 1 10000`;do key=`head -1 /dev/urandom | cksum | cut -f1 -d " "`; value=`cat /proc/sys/kernel/random/uuid`; echo "inserting value ${value} for key ${key}" | tee -a insert.log; curl -X PUT "http://myjdg-jdg.192.168.122.109.xip.io/rest/mycache/${key}" -d "${value}";done
+
+echo "open http://myjdg-jdg.192.168.122.109.xip.io/rest/mycache/"
+echo "use assert script"
+
+
+oc env bc/visualizer MAVEN_MIRROR_URL=http://nexus.ci.svc.cluster.local:8081/content/groups/public
+oc patch -n jdg bc visualizer -p '{"spec":{"source":{"git":{"ref":"master"}},"strategy":{"sourceStrategy":{"incremental":true}}}}'

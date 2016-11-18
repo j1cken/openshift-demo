@@ -1,0 +1,18 @@
+#!/bin/bash
+entry=${1:-123}
+
+line=`sed -n "${entry},${entry}p" insert.log`
+echo -e "checking log entry on line ${entry}:\n${line}"
+
+key=`echo ${line} | awk '{print $6;}'`
+expected=`echo ${line} | awk '{print $3;}'`
+
+set -x
+real=`curl -s http://myjdg-jdg.192.168.122.109.xip.io/rest/mycache/${key}`
+set +x
+
+if [ x${expected} = x${real} ];then
+  echo 'expected value matched for key'
+else
+  echo "something's wrong"
+fi
