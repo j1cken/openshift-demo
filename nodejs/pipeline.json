@@ -1,0 +1,82 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {},
+    "items": [{
+        "kind": "BuildConfig",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "nodejs-pipeline-master",
+            "labels": {
+                "app": "nodejs-integration"
+            },
+            "annotations": {
+                "pipeline.alpha.openshift.io/uses": "[{\"name\": \"master\", \"namespace\": \"\", \"kind\": \"DeploymentConfig\"}]"
+            }
+        },
+        "spec": {
+            "triggers": [{
+                "type": "GitHub",
+                "github": {
+                    "secret": "EgXVqyOOobmMzjVzQHSh"
+                }
+            }, {
+                "type": "Generic",
+                "generic": {
+                    "secret": "bz6uJc9u-0-58EoYKgL3"
+                }
+            }],
+            "source": {
+                "type": "Git",
+                "git": {
+                    "uri": "https://github.com/j1cken/nodejs-ex.git",
+                    "ref": "master"
+                }
+            },
+            "strategy": {
+                "type": "JenkinsPipeline",
+                "jenkinsPipelineStrategy": {
+                    "jenkinsfilePath": "jenkins-pipeline.dsl"
+                }
+            }
+        }
+    }, {
+        "kind": "BuildConfig",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "nodejs-pipeline-v2",
+            "labels": {
+                "app": "nodejs-integration"
+            },
+            "annotations": {
+                "pipeline.alpha.openshift.io/uses": "[{\"name\": \"v2\", \"namespace\": \"\", \"kind\": \"DeploymentConfig\"}]"
+            }
+        },
+        "spec": {
+            "triggers": [{
+                "type": "GitHub",
+                "github": {
+                    "secret": "EgXVqyOOobmMzjVzQHSh"
+                }
+            }, {
+                "type": "Generic",
+                "generic": {
+                    "secret": "bz6uJc9u-0-58EoYKgL3"
+                }
+            }],
+            "source": {
+                "type": "Git",
+                "git": {
+                    "uri": "https://github.com/j1cken/nodejs-ex.git",
+                    "ref": "v2"
+                }
+            },
+            "strategy": {
+                "type": "JenkinsPipeline",
+                "jenkinsPipelineStrategy": {
+                    "jenkinsfilePath": "jenkins-pipeline.dsl"
+                }
+            }
+        }
+    }]
+}

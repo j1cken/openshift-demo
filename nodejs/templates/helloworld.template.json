@@ -1,0 +1,201 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "helloworld-template"
+  },
+  "objects": [
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${appl}",
+        "generation": 1,
+        "creationTimestamp": null,
+        "labels": {
+          "appl": "${appl}"
+        }
+      },
+      "spec": {
+        "tags": [
+          {
+            "name": "latest",
+            "annotations": null,
+            "from": {
+              "kind": "DockerImage",
+              "name": "${registry_address}:5000/${environment}/${appl}:latest"
+            },
+            "importPolicy": {}
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${appl}",
+        "creationTimestamp": null,
+        "labels": {
+          "appl": "${appl}"
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "8080-tcp",
+            "protocol": "TCP",
+            "port": 8080,
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "appl": "${appl}"
+        },
+        "type": "ClusterIP",
+        "sessionAffinity": "None"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${appl}",
+        "creationTimestamp": null,
+        "labels": {
+          "appl": "${appl}"
+        }
+      },
+      "spec": {
+        "host": "${appl}-${environment}.${wildcard_domain}",
+        "to": {
+          "kind": "Service",
+          "name": "${appl}"
+        },
+        "port": {
+          "targetPort": "8080-tcp"
+        }
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${appl}",
+        "labels": {
+          "appl": "${appl}"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Rolling",
+          "rollingParams": {
+            "updatePeriodSeconds": 1,
+            "intervalSeconds": 1,
+            "timeoutSeconds": 600,
+            "maxUnavailable": "25%",
+            "maxSurge": "25%"
+          },
+          "resources": {}
+        },
+        "triggers": [
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "${appl}"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "${appl}:latest"
+              }
+            }
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "replicas": 1,
+        "test": false,
+        "selector": {
+          "appl": "${appl}"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "appl": "${appl}"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "${appl}",
+                "image": "${registry_address}:5000/${environment}/${appl}:latest",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/",
+                    "port": 8080,
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 3,
+                  "timeoutSeconds": 2
+                },
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "imagePullPolicy": "Always"
+              }
+            ],
+            "restartPolicy": "Always",
+            "terminationGracePeriodSeconds": 30,
+            "dnsPolicy": "ClusterFirst",
+            "securityContext": {}
+          }
+        }
+      },
+      "status": {}
+    }
+  ],
+    "parameters": [
+        {
+            "name": "environment",
+            "displayName": "Name of environment",
+            "description": "The name of the environment which is going to be deployed.",
+            "value": "uat",
+            "required": true
+        },
+        {
+            "name": "appl",
+            "displayName": "Name of the appllication",
+            "description": "The name of the appllication which is going to be deployed.",
+            "value": "helloworld",
+            "required": true
+        },
+        {
+            "name": "registry_address",
+            "displayName": "Service IP of the registry",
+            "description": "The IP address of the registry's service.",
+            "value": "172.30.169.208",
+            "required": true
+        },
+        {
+            "name": "wildcard_domain",
+            "displayName": "Wildcard Domain for generated routes",
+            "description": "The wildcard domain which services are exposed with.",
+            "value": "rhcloud.example.com",
+            "required": true
+        }
+    ],
+    "labels": {
+        "template": "helloworld-template"
+    }
+}

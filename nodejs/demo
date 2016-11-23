@@ -1,0 +1,57 @@
+#!/bin/bash
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 wildcard_domain"
+  echo "$0 192.168.122.109.xip.io"
+  exit
+fi
+
+registry_address=`oc get -n default svc docker-registry --template='{{.spec.clusterIP}}'`
+wildcard_domain=$1
+
+read -p 'creating integration environment ... <return> to continue, <Ctrl-c> to cancel' -n 1 -r
+oc new-project nodejs-integration
+oc create -n nodejs-integration -f pipeline.json
+
+read -p 'creating new application master' -n 1 -r
+oc new-app -n nodejs-integration --name=master openshift/nodejs~https://github.com/j1cken/nodejs-ex.git
+oc cancel-build -n nodejs-integration master-1
+oc patch -n nodejs-integration bc master -p '{"spec":{"source":{"git":{"ref":"master"}},"strategy":{"sourceStrategy":{"incremental":true}}}}'
+#oc start-build -n nodejs-integration master
+oc expose -n nodejs-integration svc master
+echo 'Check with:'
+echo "for i in {1..10000};do curl http://master-nodejs-integration.${wildcard_domain};sleep 0.4;done"
+
+read -p 'creating new application v2' -n 1 -r
+oc new-app -n nodejs-integration --name=v2 openshift/nodejs~https://github.com/j1cken/nodejs-ex.git
+oc cancel-build -n nodejs-integration v2-1
+oc patch -n nodejs-integration bc v2 -p '{"spec":{"source":{"git":{"ref":"v2"}},"strategy":{"sourceStrategy":{"incremental":true}}}}'
+#oc start-build -n nodejs-integration v2
+oc expose -n nodejs-integration svc v2
+echo 'Check with:'
+echo "for i in {1..10000};do curl http://v2-nodejs-integration.${wildcard_domain};sleep 0.4;done"
+
+read -p 'creating UAT environment ... <return> to continue, <Ctrl-c> to cancel' -n 1 -r
+echo 'creating new project nodejs-uat'
+oc new-project nodejs-uat
+oc process -n nodejs-uat -f templates/helloworld.template.json -v environment=nodejs-uat -v appl=helloworld -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
+
+read -p 'creating new project nodejs-production' -n 1 -r
+oc new-project nodejs-production
+oc process -n nodejs-production -f templates/helloworld.template.json -v environment=nodejs-production -v appl=blue -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
+oc process -n nodejs-production -f templates/helloworld.template.json -v environment=nodejs-production -v appl=green -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
+oc delete -n nodejs-production route blue
+oc delete -n nodejs-production route green
+oc expose -n nodejs-production svc blue --hostname=www-production.${wildcard_domain}
+
+read -p 'setup policies for authorization ...'
+oc policy add-role-to-user edit system:serviceaccount:nodejs-integration:jenkins -n nodejs-production
+oc policy add-role-to-user edit system:serviceaccount:nodejs-integration:jenkins -n nodejs-uat
+oc policy add-role-to-user edit system:serviceaccount:nodejs-integration:jenkins -n nodejs-integration
+oc policy add-role-to-user system:image-puller system:serviceaccount:nodejs-uat:default -n nodejs-integration
+oc policy add-role-to-user system:image-puller system:serviceaccount:nodejs-production:default -n nodejs-integration
+
+read -p '*** WARNING *** deleting all generated resources? Really continue?' -n 1 -r
+
+oc delete project nodejs-integration
+oc delete project nodejs-uat
+oc delete project nodejs-production
