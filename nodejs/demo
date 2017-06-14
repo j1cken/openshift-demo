@@ -33,12 +33,12 @@ echo "for i in {1..10000};do curl http://v2-nodejs-integration.${wildcard_domain
 read -p 'creating UAT environment ... <return> to continue, <Ctrl-c> to cancel' -n 1 -r
 echo 'creating new project nodejs-uat'
 oc new-project nodejs-uat
-oc process -n nodejs-uat -f templates/helloworld.template.json -v environment=nodejs-uat -v appl=helloworld -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
+oc process -n nodejs-uat -f templates/helloworld.template.json -p environment=nodejs-uat -p appl=helloworld -p registry_address=${registry_address} -p wildcard_domain=${wildcard_domain}| oc create -f -
 
 read -p 'creating new project nodejs-production' -n 1 -r
 oc new-project nodejs-production
-oc process -n nodejs-production -f templates/helloworld.template.json -v environment=nodejs-production -v appl=blue -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
-oc process -n nodejs-production -f templates/helloworld.template.json -v environment=nodejs-production -v appl=green -v registry_address=${registry_address} -v wildcard_domain=${wildcard_domain}| oc create -f -
+oc process -n nodejs-production -f templates/helloworld.template.json -p environment=nodejs-production -p appl=blue -p registry_address=${registry_address} -p wildcard_domain=${wildcard_domain}| oc create -f -
+oc process -n nodejs-production -f templates/helloworld.template.json -p environment=nodejs-production -p appl=green -p registry_address=${registry_address} -p wildcard_domain=${wildcard_domain}| oc create -f -
 oc delete -n nodejs-production route blue
 oc delete -n nodejs-production route green
 oc expose -n nodejs-production svc blue --hostname=www-production.${wildcard_domain}
